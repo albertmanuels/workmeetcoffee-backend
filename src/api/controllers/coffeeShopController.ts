@@ -1,25 +1,33 @@
 import { Request, Response } from "express"
 import prisma from "../../lib/prisma"
 import { generateSlug } from "../../lib/helpers"
+import { PostBody } from "./types"
 export const getAllCoffeeShop = async (req: Request, res: Response) => {
   const {searchValue} = req.body
+  
+  try {
+    const coffeeShopData = await prisma.coffeeShop.findMany({
+      where: searchValue ? {
+       OR: [
+         { name: { contains: searchValue, mode: "insensitive" } },
+       ]
+      } : {},
+     })
+   
+     const result = coffeeShopData.map(item => {
+       delete item.facilitiesId
+       return item
+     })
+   
+     res.status(200).send({
+       data: result
+     })
 
-  const coffeeShopData = await prisma.coffeeShop.findMany({
-   where: searchValue ? {
-    OR: [
-      { name: { contains: searchValue, mode: "insensitive" } },
-    ]
-   } : {},
-  })
-
-  const result = coffeeShopData.map(item => {
-    delete item.facilitiesId
-    return item
-  })
-
-  res.status(200).send({
-    data: result
-  })
+  } catch (error) {
+    res.status(500).send({
+      message: "Server error!"
+    })
+  }
 }
 
 export const getDetailCoffeeShop = async (req: Request, res: Response) => {
@@ -58,27 +66,8 @@ export const getDetailCoffeeShop = async (req: Request, res: Response) => {
   })
 }
 
-// type PostCoffeeShop = {
-//   id: string,
-//   name: string;
-//   location: string;
-//   recommendedBy: string;
-//   facilities: {
-//     wifi: boolean;
-//     beverages: boolean;
-//     snacks: boolean;
-//     meals: boolean;
-//     sockets: boolean;
-//     musholla: boolean;
-//     carParking: boolean;
-//     motorParking: boolean;
-//     babyChair: boolean
-//     meetingRoom: boolean;
-//   }
-// }
-
 export const postCoffeeShop = async (req: Request, res: Response) => {
-  const body = req.body
+  const body:PostBody = req.body
 
   try {
     const data  = await prisma.coffeeShop.create({

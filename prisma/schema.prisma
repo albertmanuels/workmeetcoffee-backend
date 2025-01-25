@@ -9,26 +9,26 @@ datasource db {
 }
 
 model CoffeeShop {
-  id            String     @id @unique @default(cuid())
+  id            String      @id @unique @default(cuid())
   name          String
   recommendedBy String
   location      String
-  facilities    Facilities @relation(fields: [facilitiesId], references: [id])
-  facilitiesId  String
-  slug          String
+  facilities    Facilities? @relation(fields: [facilitiesId], references: [id])
+  facilitiesId  String?
+  slug          String?
 }
 
 model Facilities {
-  id          String       @id @unique @default(cuid())
-  wifi        Boolean      @default(false)
-  beverages   Boolean      @default(false)
-  snacks      Boolean      @default(false)
-  // meals        Boolean      @default(false)
-  // sockets      Boolean      @default(false)
-  // musholla     Boolean      @default(false)
-  // carParking   Boolean      @default(false)
-  // motorParking Boolean      @default(false)
-  // babyChair    Boolean      @default(false)
-  // meetingRoom  Boolean      @default(false)
-  coffeeShops CoffeeShop[]
+  id           String       @id @unique @default(cuid())
+  wifi         Boolean      @default(false)
+  beverages    Boolean      @default(false)
+  snacks       Boolean      @default(false)
+  meals        Boolean      @default(false)
+  sockets      Boolean      @default(false)
+  musholla     Boolean      @default(false)
+  carParking   Boolean      @default(false)
+  motorParking Boolean      @default(false)
+  babyChair    Boolean      @default(false)
+  meetingRoom  Boolean      @default(false)
+  CoffeeShop   CoffeeShop[]
 }
