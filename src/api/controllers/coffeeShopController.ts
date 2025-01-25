@@ -22,33 +22,41 @@ export const getAllCoffeeShop = async (req: Request, res: Response) => {
   })
 }
 
-// export const getDetailCoffeeShop = async (req: Request, res: Response) => {
-//   const csSlug = generateSlug(req.body.name)
-  
-//   const coffeeShopBase = await prisma.coffeeShop.findFirst({
-//     where: {
-      
-//   }})
+export const getDetailCoffeeShop = async (req: Request, res: Response) => {
+  const {slug, id} = req.params
 
-//   delete coffeeShopBase.facilitiesId
+  const coffeeShop = await prisma.coffeeShop.findFirst({
+    where: {
+      id
+  }})
 
-//   const facilities = await prisma.facilities.findFirst({
-//     where: {
-//       id: coffeeShopBase.facilitiesId
-//     },
-//   })
+  if(!coffeeShop) {
+    res.status(404).send({
+      message: "Coffee Shop not found!"
+    })
+  }
 
-//   delete facilities.id
+  if(coffeeShop.slug !== slug) {
+    res.redirect(301, `/coffee-shop/${coffeeShop.slug}-${id}`)
+  }
 
-//   const data = {
-//     ...coffeeShopBase,
-//     facilities
-//   }
+  const facilities = await prisma.facilities.findFirst({
+    where: {
+      id: coffeeShop.facilitiesId
+    },
+  })
 
-//   res.status(200).send({
-//     data,
-//   })
-// }
+  delete coffeeShop.facilitiesId
+  delete facilities.id
+
+  const data = Object.assign(structuredClone(coffeeShop), {
+    facilities
+  }) 
+
+  res.status(200).send({
+    data,
+  })
+}
 
 // type PostCoffeeShop = {
 //   id: string,
@@ -100,8 +108,4 @@ export const postCoffeeShop = async (req: Request, res: Response) => {
       data: {}
     })
   }
-
- 
-
-
 }
