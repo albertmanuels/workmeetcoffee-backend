@@ -9,3 +9,7 @@ export const generateUniqueId = (array) => {
 
   return uniqueId
 }
+
+export const generateSlug = (str: string) => {
+  return str?.split(" ").join("-").toLowerCase()
+}
